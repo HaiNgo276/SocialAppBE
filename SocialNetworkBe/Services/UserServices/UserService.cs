@@ -80,22 +80,36 @@ namespace SocialNetworkBe.Services.UserServices
                 var createUserResult = await _userManager.CreateAsync(user, request.Password);
                 if (!createUserResult.Succeeded) return (false, UserRegistrationEnum.CreatedUserFailure.GetMessage());
 
-                string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                string encodedToken = WebUtility.UrlEncode(token);
-                var confirmationLink = $"{baseUrl}/api/v1/user/confirmationEmail?token={encodedToken}&email={request.Email}";
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var isProduction = environment == "Production";
 
-                await _emailSender.SendEmailAsync(request.Email, "Confirmation Email Link",
-                    $@"
-                            <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd;'>
-                            <h2 style='color: #333;'>Hello</h2>
-                            <p style='margin-top: 10px;'>Thank you for signing up. Please confirm your email by clicking the button below:</p>
-                            <div style='margin-top: 20px;'>
-                                <a href='{confirmationLink}' style='background-color: #007BFF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Confirm Email</a>
+                if (!isProduction)
+                {
+                    // Only send confirmation email in non-production environments
+                    string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    string encodedToken = WebUtility.UrlEncode(token);
+                    var confirmationLink = $"{baseUrl}/api/v1/user/confirmationEmail?token={encodedToken}&email={request.Email}";
+
+                    await _emailSender.SendEmailAsync(request.Email, "Confirmation Email Link",
+                        $@"
+                                <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd;'>
+                                <h2 style='color: #333;'>Hello</h2>
+                                <p style='margin-top: 10px;'>Thank you for signing up. Please confirm your email by clicking the button below:</p>
+                                <div style='margin-top: 20px;'>
+                                    <a href='{confirmationLink}' style='background-color: #007BFF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Confirm Email</a>
+                                </div>
+                                <p style='margin-top: 20px; font-size: 12px; color: #999;'>This email was sent by FriCon. If you didn't sign up, you can safely ignore this email.</p>
                             </div>
-                            <p style='margin-top: 20px; font-size: 12px; color: #999;'>This email was sent by FriCon. If you didn't sign up, you can safely ignore this email.</p>
-                        </div>
-                        "
-                    );
+                            "
+                        );
+                }
+                else
+                {
+                    // In production, auto-confirm email since SMTP is not available
+                    Console.WriteLine($"Production mode: Auto-confirming email for {request.Email}");
+                    user.EmailConfirmed = true;
+                    await _userManager.UpdateAsync(user);
+                }
 
                 await _userManager.AddToRoleAsync(user, "User");
                 return (true, UserRegistrationEnum.RegistrationSuccess.GetMessage());
