@@ -11,15 +11,15 @@ namespace DataAccess.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "NotificationData");
+            //migrationBuilder.DropTable(
+            //    name: "NotificationData");
 
             migrationBuilder.DropTable(
                 name: "NotificationUser");
 
-            migrationBuilder.DropColumn(
-                name: "UpdatedAt",
-                table: "Notification");
+            //migrationBuilder.DropColumn(
+            //    name: "UpdatedAt",
+            //    table: "Notification");
 
             migrationBuilder.AddColumn<string>(
                 name: "Data",

@@ -24,7 +24,17 @@ var connectionString = builder.Configuration.GetConnectionString("MyDb")
 
 builder.Services.AddDbContext<SocialNetworkDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseSqlServer(connectionString, sqlServerOptions =>
+    {
+        // Enable retry on failure for Azure SQL transient errors
+        sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null
+        );
+        // Set command timeout for long-running queries
+        sqlServerOptions.CommandTimeout(60);
+    });
 });
 
 // Add health checks
