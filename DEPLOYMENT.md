@@ -1,17 +1,18 @@
 # ?? H??ng D?n Deploy SocialNetworkBe
 
-## ?? L?u Ý Quan Tr?ng
+## ?? L?u ï¿½ Quan Tr?ng
 
-**Vercel KHÔNG h? tr? .NET Backend!** Vercel ch? h? tr?:
+**Vercel KHï¿½NG h? tr? .NET Backend!** Vercel ch? h? tr?:
 - Frontend (React, Next.js, Vue)
 - Serverless Functions (Node.js, Python, Go)
 
-## ?? Các Bi?n Môi Tr??ng C?n Thi?t (.env)
+## ?? Cï¿½c Bi?n Mï¿½i Tr??ng C?n Thi?t (.env)
 
-| Bi?n | Mô t? | Ví d? |
+| Bi?n | Mï¿½ t? | Vï¿½ d? |
 |------|-------|-------|
-| `ConnectionStrings__MyDb` | SQL Server connection string | `Server=tcp:xxx.database.windows.net;...` |
-| `JWT__Key` | Secret key cho JWT (min 32 chars) | `7b1b14d2e8e34d9c9f6a9a7a35b5f2d1...` |
+| `ConnectionStrings__MyDb` | SQL Server connection string | `Server=tcp:xxx.database.windows.net;...` || `Cassandra__ContactPoint` | DataStax Astra contact point | `xxx-us-east-2.db.astra.datastax.com` |
+| `Cassandra__Token` | Astra application token | `AstraCS:clientId:token...` |
+| `Cassandra__Keyspace` | Cassandra keyspace name | `fricon` || `JWT__Key` | Secret key cho JWT (min 32 chars) | `7b1b14d2e8e34d9c9f6a9a7a35b5f2d1...` |
 | `JWT__Issuer` | JWT Issuer URL | `https://your-api.com` |
 | `JWT__Audience` | JWT Audience URL | `https://your-api.com` |
 | `Cloudinary__Api` | Cloudinary API URL | `cloudinary://key:secret@cloud` |
@@ -19,7 +20,7 @@
 
 ---
 
-## ?? Option 1: Deploy lên Railway (Recommended - Free)
+## ?? Option 1: Deploy lï¿½n Railway (Recommended - Free)
 
 ### B??c 1: Chu?n b? GitHub
 ```bash
@@ -29,43 +30,47 @@ git commit -m "Add Docker support for deployment"
 git push origin main
 ```
 
-### B??c 2: Deploy trên Railway
+### B??c 2: Deploy trï¿½n Railway
 1. Truy c?p [railway.app](https://railway.app)
 2. ??ng nh?p b?ng GitHub
 3. Click **"New Project"** ? **"Deploy from GitHub repo"**
 4. Ch?n repo `SocialNetworkBe`
 5. Railway s? t? detect Dockerfile
 
-### B??c 3: Thêm Environment Variables
-1. Click vào service v?a t?o
-2. Vào tab **"Variables"**
-3. Thêm các bi?n:
+### B??c 3: Thï¿½m Environment Variables
+1. Click vï¿½o service v?a t?o
+2. Vï¿½o tab **"Variables"**
+3. Thï¿½m cï¿½c bi?n:
 ```
-ConnectionStrings__MyDb=Server=tcp:your-server.database.windows.net,1433;Database=SocialNetwork;User Id=xxx;Password=xxx;Encrypt=True;TrustServerCertificate=False;
-JWT__Key=your-secure-256-bit-key-here
+ConnectionStrings__MyDb=Server=tcp:ngohai.database.windows.net,1433;Initial Catalog=SocialNetwork;User ID=admin123;Password=ngohai2706@;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+Cassandra__ContactPoint=f2a67376-7a04-4bcd-9f82-0b19c958647b-us-east-2.db.astra.datastax.com
+Cassandra__Token=AstraCS:YOUR_CLIENT_ID:YOUR_TOKEN_HERE
+Cassandra__Keyspace=fricon
+JWT__Key=7b1b14d2e8e34d9c9f6a9a7a35b5f2d1d6c8a2b7f3e4c9a8b1d5f7c6a3b2e1f0
 JWT__Issuer=https://your-app.up.railway.app
 JWT__Audience=https://your-app.up.railway.app
 Cloudinary__Api=cloudinary://434244532219775:jf0OWJdWHU9Nt1oqG1IjQVyiBlQ@dhnjbohwa
 AllowedOrigins=https://your-frontend.vercel.app,http://localhost:3000
+ASPNETCORE_ENVIRONMENT=Production
 ```
 
-### B??c 4: Thêm Database (Optional - n?u c?n SQL Server)
-- Railway có PostgreSQL mi?n phí
+### B??c 4: Thï¿½m Database (Optional - n?u c?n SQL Server)
+- Railway cï¿½ PostgreSQL mi?n phï¿½
 - Ho?c s? d?ng **Azure SQL Free Tier**
 
 ---
 
-## ?? Option 2: Deploy lên Render (Free)
+## ?? Option 2: Deploy lï¿½n Render (Free)
 
 ### B??c 1: Chu?n b?
-Gi?ng Railway, push code lên GitHub
+Gi?ng Railway, push code lï¿½n GitHub
 
 ### B??c 2: Deploy
 1. Truy c?p [render.com](https://render.com)
 2. **New** ? **Web Service**
 3. Connect GitHub repo
 4. Ch?n **Docker** runtime
-5. Thêm Environment Variables
+5. Thï¿½m Environment Variables
 
 ### render.yaml (Optional - Infrastructure as Code)
 ```yaml
@@ -92,7 +97,7 @@ services:
 
 ---
 
-## ?? Option 3: Deploy lên Azure (T?t nh?t cho .NET)
+## ?? Option 3: Deploy lï¿½n Azure (T?t nh?t cho .NET)
 
 ### S? d?ng Azure CLI
 ```bash
@@ -115,7 +120,7 @@ az webapp deployment source config --name socialnetwork-api --resource-group Soc
 az webapp create --resource-group SocialNetworkRG --plan SocialNetworkPlan --name socialnetwork-api --deployment-container-image-name your-docker-image
 ```
 
-### Thêm Environment Variables trên Azure
+### Thï¿½m Environment Variables trï¿½n Azure
 ```bash
 az webapp config appsettings set --resource-group SocialNetworkRG --name socialnetwork-api --settings \
   ConnectionStrings__MyDb="your-connection-string" \
@@ -128,9 +133,9 @@ az webapp config appsettings set --resource-group SocialNetworkRG --name socialn
 
 ---
 
-## ?? Option 4: Deploy lên Fly.io (Free)
+## ?? Option 4: Deploy lï¿½n Fly.io (Free)
 
-### B??c 1: Cài ??t Fly CLI
+### B??c 1: Cï¿½i ??t Fly CLI
 ```bash
 # Windows (PowerShell)
 powershell -Command "iwr https://fly.io/install.ps1 -useb | iex"
@@ -195,7 +200,7 @@ Server=tcp:your-server.database.windows.net,1433;Initial Catalog=SocialNetwork;P
 
 ## ?? B?o M?t Khi Deploy
 
-1. **KHÔNG commit file `.env` lên GitHub**
+1. **KHï¿½NG commit file `.env` lï¿½n GitHub**
 2. **??i JWT Key** - t?o key m?i cho production
 3. **T?o Cloudinary account m?i** cho production
 4. **S? d?ng HTTPS** cho t?t c? endpoints
@@ -205,13 +210,13 @@ Server=tcp:your-server.database.windows.net,1433;Initial Catalog=SocialNetwork;P
 
 ## ?? Checklist Tr??c Khi Deploy
 
-- [ ] ?ã push code lên GitHub
+- [ ] ?ï¿½ push code lï¿½n GitHub
 - [ ] Dockerfile ? th? m?c root
-- [ ] ?ã t?o database trên cloud (Azure SQL)
-- [ ] ?ã có Cloudinary account
-- [ ] ?ã generate JWT Key m?i cho production
-- [ ] ?ã config AllowedOrigins v?i frontend URL
-- [ ] ?ã test build local v?i Docker:
+- [ ] ?ï¿½ t?o database trï¿½n cloud (Azure SQL)
+- [ ] ?ï¿½ cï¿½ Cloudinary account
+- [ ] ?ï¿½ generate JWT Key m?i cho production
+- [ ] ?ï¿½ config AllowedOrigins v?i frontend URL
+- [ ] ?ï¿½ test build local v?i Docker:
   ```bash
   docker build -t socialnetwork-api .
   docker run -p 8080:8080 --env-file .env socialnetwork-api
@@ -226,13 +231,13 @@ Server=tcp:your-server.database.windows.net,1433;Initial Catalog=SocialNetwork;P
 - ??m b?o IP c?a server ???c whitelist
 
 ### L?i CORS
-- Ki?m tra `AllowedOrigins` có ?úng URL frontend không
-- ??m b?o không có trailing slash
+- Ki?m tra `AllowedOrigins` cï¿½ ?ï¿½ng URL frontend khï¿½ng
+- ??m b?o khï¿½ng cï¿½ trailing slash
 
 ### L?i JWT
-- Ki?m tra JWT Key ?? dài (min 32 characters)
+- Ki?m tra JWT Key ?? dï¿½i (min 32 characters)
 - Issuer/Audience ph?i match v?i domain API
 
-### SignalR không ho?t ??ng
-- M?t s? free tier không h? tr? WebSocket
-- C?n upgrade plan ho?c dùng Long Polling fallback
+### SignalR khï¿½ng ho?t ??ng
+- M?t s? free tier khï¿½ng h? tr? WebSocket
+- C?n upgrade plan ho?c dï¿½ng Long Polling fallback
