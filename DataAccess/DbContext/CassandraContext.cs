@@ -18,22 +18,20 @@ namespace DataAccess.DbContext
                 // DataStax Astra Cloud configuration
                 var contactPoint = Environment.GetEnvironmentVariable("Cassandra__ContactPoint")
                     ?? configuration["Cassandra:ContactPoint"];
-                var clientId = Environment.GetEnvironmentVariable("Cassandra__ClientId")
-                    ?? configuration["Cassandra:ClientId"];
-                var clientSecret = Environment.GetEnvironmentVariable("Cassandra__ClientSecret")
-                    ?? configuration["Cassandra:ClientSecret"];
+                var token = Environment.GetEnvironmentVariable("Cassandra__Token")
+                    ?? configuration["Cassandra:Token"];
                 var keyspace = Environment.GetEnvironmentVariable("Cassandra__Keyspace")
                     ?? configuration["Cassandra:Keyspace"] ?? "fricon";
 
-                if (string.IsNullOrEmpty(contactPoint) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+                if (string.IsNullOrEmpty(contactPoint) || string.IsNullOrEmpty(token))
                 {
-                    throw new InvalidOperationException("Cassandra:ContactPoint, ClientId and ClientSecret must be configured for production.");
+                    throw new InvalidOperationException("Cassandra:ContactPoint and Token must be configured for production.");
                 }
                     
                 _cluster = Cluster.Builder()
                     .AddContactPoint(contactPoint)
                     .WithPort(29042) // Astra secure port
-                    .WithCredentials(clientId, clientSecret) // Use ClientId as username, ClientSecret as password
+                    .WithCredentials("token", token) // Username is always "token", password is the full AstraCS token
                     .WithSSL()
                     .Build();
                     
