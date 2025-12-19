@@ -35,19 +35,29 @@ namespace DataAccess.DbContext
                 Console.WriteLine($"Connecting to Astra: {contactPoint}");
                 Console.WriteLine($"Token length: {token.Length}");
                 Console.WriteLine($"Token starts with: {token.Substring(0, Math.Min(20, token.Length))}...");
-                    
-                _cluster = Cluster.Builder()
-                    .AddContactPoint(contactPoint)
-                    .WithPort(29042) // Astra secure port
-                    .WithCredentials("token", token) // Username is always "token", password is the full AstraCS token
-                    .WithSSL()
-                    .Build();
-                    
-                Session = _cluster.Connect(keyspace);
-                Console.WriteLine("Successfully connected to Astra!");
                 
-                // Create tables if not exist in cloud
-                CreateTablesIfNotExist();
+                try
+                {
+                    _cluster = Cluster.Builder()
+                        .AddContactPoint(contactPoint)
+                        .WithPort(29042) // Astra secure port
+                        .WithCredentials("token", token) // Username is always "token", password is the full AstraCS token
+                        .WithSSL()
+                        .Build();
+                        
+                    Session = _cluster.Connect(keyspace);
+                    Console.WriteLine("Successfully connected to Astra!");
+                    
+                    // Create tables if not exist in cloud
+                    CreateTablesIfNotExist();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"ERROR: Failed to connect to Cassandra: {ex.Message}");
+                    Console.WriteLine("App will run without feed features.");
+                    _cluster = null!;
+                    Session = null!;
+                }
             }
             else
             {
