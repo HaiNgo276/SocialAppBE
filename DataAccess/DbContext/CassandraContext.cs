@@ -17,11 +17,11 @@ namespace DataAccess.DbContext
             {
                 // DataStax Astra Cloud configuration
                 var contactPoint = Environment.GetEnvironmentVariable("Cassandra__ContactPoint")
-                    ?? configuration.GetValue<string>("Cassandra:ContactPoint");
+                    ?? configuration["Cassandra:ContactPoint"];
                 var token = Environment.GetEnvironmentVariable("Cassandra__Token")
-                    ?? configuration.GetValue<string>("Cassandra:Token");
+                    ?? configuration["Cassandra:Token"];
                 var keyspace = Environment.GetEnvironmentVariable("Cassandra__Keyspace")
-                    ?? configuration.GetValue<string>("Cassandra:Keyspace", "fricon");
+                    ?? configuration["Cassandra:Keyspace"] ?? "fricon";
 
                 if (string.IsNullOrEmpty(contactPoint) || string.IsNullOrEmpty(token))
                 {
