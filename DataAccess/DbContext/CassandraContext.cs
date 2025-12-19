@@ -25,8 +25,16 @@ namespace DataAccess.DbContext
 
                 if (string.IsNullOrEmpty(contactPoint) || string.IsNullOrEmpty(token))
                 {
-                    throw new InvalidOperationException("Cassandra:ContactPoint and Token must be configured for production.");
+                    Console.WriteLine("WARNING: Cassandra not configured for production. Running without feed features.");
+                    // Create a dummy session for now
+                    _cluster = null!;
+                    Session = null!;
+                    return;
                 }
+
+                Console.WriteLine($"Connecting to Astra: {contactPoint}");
+                Console.WriteLine($"Token length: {token.Length}");
+                Console.WriteLine($"Token starts with: {token.Substring(0, Math.Min(20, token.Length))}...");
                     
                 _cluster = Cluster.Builder()
                     .AddContactPoint(contactPoint)
@@ -36,6 +44,7 @@ namespace DataAccess.DbContext
                     .Build();
                     
                 Session = _cluster.Connect(keyspace);
+                Console.WriteLine("Successfully connected to Astra!");
                 
                 // Create tables if not exist in cloud
                 CreateTablesIfNotExist();
